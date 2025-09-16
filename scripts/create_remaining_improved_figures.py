@@ -16,28 +16,14 @@ from matplotlib.patches import Rectangle, FancyBboxPatch
 import matplotlib.patches as mpatches
 from scipy import stats
 import json
+from scripts.fig_utils import (
+    set_matplotlib_defaults,
+    provenance_footer,
+    load_json_or_none,
+)
 
 # Set scientific plotting style
-plt.style.use('default')
-plt.rcParams.update({
-    'font.family': 'Times New Roman',
-    'font.size': 11,
-    'axes.linewidth': 1.0,
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'xtick.major.size': 3,
-    'ytick.major.size': 3,
-    'xtick.minor.size': 2,
-    'ytick.minor.size': 2,
-    'legend.frameon': False,
-    'figure.dpi': 300,
-    'savefig.dpi': 300,
-    'savefig.bbox': 'tight',
-    'savefig.pad_inches': 0.1,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linewidth': 0.5
-})
+set_matplotlib_defaults()
 
 def load_real_data():
     """Load all real experimental data"""
@@ -93,6 +79,7 @@ def create_improved_paired_lines_plot(df):
     ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10,
             verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     
+    provenance_footer(ax, 'results/comprehensive_metrics.csv')
     return fig
 
 def create_improved_r2_delta_plot(df):
@@ -136,6 +123,7 @@ def create_improved_r2_delta_plot(df):
     ax.set_xticklabels([s.replace('test-', '') for s in scenarios], rotation=45)
     ax.grid(True, alpha=0.3)
     
+    provenance_footer(ax, 'results/comprehensive_metrics.csv')
     return fig
 
 def create_improved_baseline_comparison_plot(df):
@@ -181,69 +169,78 @@ def create_improved_baseline_comparison_plot(df):
                 ha='center', va='bottom', fontsize=10)
     
     plt.tight_layout()
+    provenance_footer(ax1, 'results/comprehensive_metrics.csv')
+    provenance_footer(ax2, 'results/comprehensive_metrics.csv')
     return fig
 
-def create_improved_runtime_plot():
-    """Create improved runtime comparison plot"""
-    fig, ax = plt.subplots(figsize=(6, 4))
-    
-    # Real runtime data (from the paper)
-    models = ['Physics', 'UDE']
-    runtimes = [0.08, 0.27]  # ms
-    stds = [0.01, 0.05]  # ms
-    
-    bars = ax.bar(models, runtimes, yerr=stds, capsize=5, 
-                 color=['lightblue', 'lightcoral'], alpha=0.7, edgecolor='black')
-    
-    # Add value labels
-    for i, (rt, std) in enumerate(zip(runtimes, stds)):
-        ax.text(i, rt + std + 0.01, f'{rt:.2f}±{std:.2f} ms', 
-                ha='center', va='bottom', fontsize=10)
-    
-    # Add speedup annotation
-    speedup = runtimes[1] / runtimes[0]  # UDE is faster
-    ax.text(0.5, 0.8, f'Speedup: {speedup:.1f}x\n(UDE faster)', 
-            transform=ax.transAxes, ha='center', va='center',
-            bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7),
-            fontsize=10, fontweight='bold')
-    
-    ax.set_ylabel('Runtime (ms)')
-    ax.set_title('Computational Efficiency Analysis')
+def create_improved_runtime_plot(measurements=None):
+    """Create improved runtime comparison plot using distributions.
+    measurements: optional dict {label: array_like_ms}. If None, mark Schematic.
+    """
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    if not measurements:
+        ax.set_title('Schematic — Runtime comparison (measurements missing)')
+        ax.set_ylabel('Runtime (ms)')
+        ax.grid(True, alpha=0.3)
+        provenance_footer(ax, 'results/runtime_measurements.npz')
+        return fig
+    labels = list(measurements.keys())
+    data = [np.asarray(measurements[k]) for k in labels]
+    bp = ax.boxplot(data, labels=labels, patch_artist=True, showfliers=False)
+    colors = ['#4E79A7', '#59A14F']  # colorblind-friendly
+    for patch, c in zip(bp['boxes'], colors * ((len(labels)+1)//2)):
+        patch.set_facecolor(c)
+        patch.set_alpha(0.6)
+    ax.set_ylabel('Runtime per trajectory (ms)')
+    ax.set_title('Inference Runtime Distributions')
     ax.grid(True, alpha=0.3)
-    
+    # environment banner placeholder
+    ax.text(0.02, 0.98, 'Env: CPU, BLAS threads=?, solver=?, reltol=?', transform=ax.transAxes,
+            va='top', ha='left', fontsize=8, alpha=0.8)
+    provenance_footer(ax, 'results/runtime_measurements.npz')
     return fig
 
-def create_improved_symbolic_extraction_plot():
-    """Create improved symbolic extraction plot"""
-    fig, ax = plt.subplots(figsize=(6, 4))
-    
-    # Real symbolic extraction data (from the paper)
-    P = np.linspace(0, 1, 100)
-    f_theta = -0.055 + 0.836*P + 0.001*P**2 - 0.019*P**3
-    
-    # Plot the function
-    ax.plot(P, f_theta, 'k-', linewidth=2, label='f_θ(P)')
-    
-    # Add linear reference
-    linear_ref = 0.836 * P  # Linear term only
-    ax.plot(P, linear_ref, 'r--', linewidth=1, alpha=0.7, label='Linear term only')
-    
-    # Add polynomial equation
-    eq_text = r'$f_\theta(P) = -0.055 + 0.836P + 0.001P^2 - 0.019P^3$'
-    ax.text(0.05, 0.95, eq_text, transform=ax.transAxes, fontsize=10,
-            verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
-    
-    # Add R²
-    r2_text = r'$R^2 = 0.982$'
-    ax.text(0.05, 0.85, r2_text, transform=ax.transAxes, fontsize=10,
-            verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
-    
-    ax.set_xlabel('Generation Power P')
-    ax.set_ylabel('Residual Function f_θ(P)')
-    ax.set_title('Symbolic Extraction: UDE Residual Function')
+def create_improved_symbolic_extraction_plot(P=None, f_vals=None):
+    """Create improved symbolic extraction plot from artifact or provided data.
+    Loads results/symbolic_fit.json if present; otherwise computes from (P, f_vals).
+    """
+    fig, (ax, axr) = plt.subplots(2, 1, figsize=(6, 6), sharex=True, gridspec_kw={'height_ratios':[3,1]})
+
+    coeffs = load_json_or_none('results/symbolic_fit.json')
+    if coeffs is not None:
+        beta = np.array(coeffs.get('beta', []))
+        r2 = coeffs.get('r2')
+        Pline = np.linspace(0, 1, 400)
+        Xl = np.vstack([np.ones_like(Pline), Pline, Pline**2, Pline**3]).T
+        yhat = Xl @ beta
+        ax.plot(Pline, yhat, linewidth=1.8, label=f"Cubic fit (R²={r2:.3f})")
+        ax.set_title('Symbolic Extraction (from artifact)')
+        axr.axhline(0.0, color='k', linewidth=1)
+    elif P is not None and f_vals is not None:
+        P = np.asarray(P); f_vals = np.asarray(f_vals)
+        X = np.vstack([np.ones_like(P), P, P**2, P**3]).T
+        beta, *_ = np.linalg.lstsq(X, f_vals, rcond=None)
+        yhat = X @ beta
+        ssr = np.sum((f_vals - yhat)**2)
+        sst = np.sum((f_vals - f_vals.mean())**2)
+        r2 = 1 - ssr/sst if sst > 0 else np.nan
+        order = np.argsort(P)
+        ax.scatter(P, f_vals, s=12, alpha=0.75, label='NN residual')
+        ax.plot(P[order], yhat[order], linewidth=1.8, label=f"Cubic fit (R²={r2:.3f})")
+        axr.axhline(0.0, color='k', linewidth=1)
+        axr.scatter(P, f_vals - yhat, s=10, alpha=0.7)
+        ax.set_title('Symbolic Extraction (computed)')
+    else:
+        ax.text(0.5, 0.5, 'Schematic — residual data missing', transform=ax.transAxes, ha='center', va='center')
+        axr.axhline(0.0, color='k', linewidth=1)
+
+    ax.set_ylabel('f_θ(P)')
     ax.legend()
     ax.grid(True, alpha=0.3)
-    
+    axr.set_xlabel('Generation Power P')
+    axr.set_ylabel('Residuals')
+    axr.grid(True, alpha=0.3)
+    provenance_footer(ax, 'results/symbolic_fit.json')
     return fig
 
 def main():

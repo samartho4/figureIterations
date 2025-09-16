@@ -14,28 +14,16 @@ from matplotlib.patches import Rectangle, FancyBboxPatch, Circle
 import matplotlib.patches as mpatches
 from scipy import stats
 import json
+from scripts.fig_utils import (
+    set_matplotlib_defaults,
+    provenance_footer,
+    bland_altman,
+    empirical_coverage,
+    load_bson_or_npz,
+)
 
 # Set scientific plotting style
-plt.style.use('default')
-plt.rcParams.update({
-    'font.family': 'Times New Roman',
-    'font.size': 11,
-    'axes.linewidth': 1.0,
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'xtick.major.size': 3,
-    'ytick.major.size': 3,
-    'xtick.minor.size': 2,
-    'ytick.minor.size': 2,
-    'legend.frameon': False,
-    'figure.dpi': 300,
-    'savefig.dpi': 300,
-    'savefig.bbox': 'tight',
-    'savefig.pad_inches': 0.1,
-    'axes.grid': True,
-    'grid.alpha': 0.3,
-    'grid.linewidth': 0.5
-})
+set_matplotlib_defaults()
 
 def load_real_data():
     """Load all real experimental data"""
@@ -58,10 +46,11 @@ def load_real_data():
     print(f"Loaded test data: {test_df.shape}")
     
     # Load BNODE calibration data
-    import bson
-    with open('results/simple_bnode_calibration_results.bson', 'rb') as f:
-        bnode_data = bson.loads(f.read())
-    print(f"Loaded BNODE calibration data: {len(bnode_data)} keys")
+    bnode_data = load_bson_or_npz('results/simple_bnode_calibration_results.bson') or \
+                 load_bson_or_npz('results/simple_bnode_calibration_results.npz')
+    if bnode_data is None:
+        print("WARN: results/simple_bnode_calibration_results.(bson|npz) missing; calibration plot will be labeled Schematic.")
+        bnode_data = {}
     
     return df, train_df, val_df, test_df, bnode_data
 
@@ -174,68 +163,83 @@ def create_improved_bland_altman(stats_data):
     ude_data = stats_data['ude_data']
     delta = stats_data['delta']
     
-    # Calculate means and differences
-    means = (physics_data + ude_data) / 2
-    differences = delta
-    
+    means, differences, bias, loa_low, loa_high = bland_altman(physics_data, ude_data)
+
     # Create scatter plot
-    ax.scatter(means, differences, s=60, alpha=0.7, color='black', edgecolors='white', linewidth=1)
-    
-    # Add mean difference line
-    ax.axhline(stats_data['mean_delta'], color='red', linestyle='-', linewidth=2, label=f'Bias = {stats_data["mean_delta"]:.4f}')
-    
-    # Add limits of agreement
-    ax.axhline(stats_data['ci_lower'], color='blue', linestyle='--', alpha=0.7, label='Limits of Agreement')
-    ax.axhline(stats_data['ci_upper'], color='blue', linestyle='--', alpha=0.7)
-    
-    # Fill limits of agreement
-    ax.axhspan(stats_data['ci_lower'], stats_data['ci_upper'], alpha=0.2, color='blue')
+    ax.scatter(means, differences, s=14, alpha=0.75, color='black', edgecolors='white', linewidth=0.8)
+
+    # Bias and LoA per Bland–Altman
+    ax.axhline(bias, color='C3', linewidth=1.5, label=f"Bias={bias:.4f}")
+    ax.axhline(loa_low, color='C0', linestyle='--', linewidth=1.2, label='LoA')
+    ax.axhline(loa_high, color='C0', linestyle='--', linewidth=1.2)
     
     ax.set_xlabel('Mean of Physics and UDE RMSE(x₂)')
     ax.set_ylabel('Difference (UDE - Physics)')
-    ax.set_title('Bland-Altman Analysis for RMSE(x₂)')
+    ax.set_title('Bland–Altman (RMSE x₂)')
     ax.legend()
     ax.grid(True, alpha=0.3)
+    provenance_footer(ax, 'results/comprehensive_metrics.csv')
     
     return fig
 
 def create_improved_calibration_plot(bnode_data):
-    """Create improved calibration plot with real data"""
-    fig, ax = plt.subplots(figsize=(6, 4))
-    
-    # Extract real calibration data from the complex BSON structure
-    # The data is in bnode_data['data'][1]['data'] as bytes
-    import struct
-    data_bytes = bnode_data['data'][1]['data']
-    values = struct.unpack('9d', data_bytes)  # 9 float64 values
-    
-    # Map to the correct keys based on the order
-    keys = bnode_data['data'][0]
-    calibration_dict = dict(zip(keys, values))
-    
-    # Real calibration data
-    nominal_coverage = np.linspace(0, 1, 100)
-    pre_calibration = calibration_dict['original_coverage_50'] * np.ones_like(nominal_coverage)  # Poor calibration
-    post_calibration = nominal_coverage  # Perfect calibration
-    
-    # Plot calibration curves
-    ax.plot(nominal_coverage, pre_calibration, 'r--', linewidth=2, label='Pre-calibration')
-    ax.plot(nominal_coverage, post_calibration, 'k-', linewidth=2, label='Post-calibration')
-    ax.plot([0, 1], [0, 1], 'k:', alpha=0.5, label='Perfect Calibration')
-    
-    # Mark specific points with real data
-    ax.plot(0.5, calibration_dict['original_coverage_50'], 'ro', markersize=8, label=f'50%: {calibration_dict["original_coverage_50"]:.3f}')
-    ax.plot(0.9, calibration_dict['original_coverage_90'], 'ro', markersize=8, label=f'90%: {calibration_dict["original_coverage_90"]:.3f}')
-    ax.plot(0.5, calibration_dict['improved_coverage_50'], 'go', markersize=8, label=f'50%: {calibration_dict["improved_coverage_50"]:.3f}')
-    ax.plot(0.9, calibration_dict['improved_coverage_90'], 'go', markersize=8, label=f'90%: {calibration_dict["improved_coverage_90"]:.3f}')
-    
-    ax.set_xlabel('Nominal Coverage')
-    ax.set_ylabel('Empirical Coverage')
-    ax.set_title('BNODE Uncertainty Calibration (Pre vs Post)')
+    """Create improved calibration plot using empirical coverage from artifacts.
+    Falls back to a clearly marked schematic if artifacts are unavailable."""
+    fig, ax = plt.subplots(figsize=(6, 6))
+
+    if not bnode_data:
+        # Schematic placeholder, clearly labeled
+        qs = np.linspace(0.1, 0.9, 9)
+        ax.plot(qs, qs, 'k:', label='Ideal')
+        ax.set_title('Schematic — Reliability (artifact missing)')
+        ax.set_aspect('equal', adjustable='box')
+        ax.set_xlim(0.08, 0.92)
+        ax.set_ylim(0.08, 0.92)
+        ax.set_xlabel('Nominal central coverage')
+        ax.set_ylabel('Empirical coverage')
+        ax.legend()
+        provenance_footer(ax, 'results/simple_bnode_calibration_results.bson')
+        return fig
+
+    # Try to derive empirical coverage from available keys
+    qs = np.linspace(0.1, 0.9, 17)
+    y_true = None
+    empirical = None
+
+    if 'y_true' in bnode_data and 'samples' in bnode_data:
+        y_true = np.asarray(bnode_data['y_true'])
+        samples = np.asarray(bnode_data['samples'])
+        empirical = empirical_coverage(y_true, samples, qs)
+    else:
+        # Attempt to interpret as dict of quantiles q_{p}
+        # Build dict mapping quantile probability to arrays
+        pred_q = {}
+        needed = np.unique(np.r_[ (1-qs)/2, (1+qs)/2 ])
+        for q in needed:
+            key = f"q_{q:.2f}"
+            alt = f"{q:.2f}"
+            arr = bnode_data.get(key, bnode_data.get(alt)) if isinstance(bnode_data, dict) else None
+            if arr is not None:
+                pred_q[q] = np.asarray(arr)
+        if 'y_true' in bnode_data:
+            y_true = np.asarray(bnode_data['y_true'])
+        if pred_q and y_true is not None:
+            empirical = empirical_coverage(y_true, pred_q, qs)
+
+    ax.plot(qs, qs, '--', linewidth=1.0, label='Ideal')
+    if empirical is not None:
+        ax.plot(qs, empirical, '-', linewidth=1.8, label='Empirical')
+        ax.set_title('Reliability Diagram (Empirical)')
+    else:
+        ax.set_title('Schematic — Reliability (could not decode artifact)')
+
+    ax.set_aspect('equal', adjustable='box')
+    ax.set_xlim(0.08, 0.92)
+    ax.set_ylim(0.08, 0.92)
+    ax.set_xlabel('Nominal central coverage')
+    ax.set_ylabel('Empirical coverage')
     ax.legend()
-    ax.grid(True, alpha=0.3)
-    ax.set_aspect('equal')
-    
+    provenance_footer(ax, 'results/simple_bnode_calibration_results.bson')
     return fig
 
 def create_improved_training_data_plot(train_df, val_df, test_df):

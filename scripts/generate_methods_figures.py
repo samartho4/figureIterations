@@ -107,9 +107,8 @@ def create_ude_training_figure():
     lambda_values = [1e-6, 1e-5, 1e-4, 5e-4, 1e-3, 5e-3]
     lr_values = [1e-3, 5e-3, 1e-2, 5e-2]
     
-    # Simulate performance scores
-    np.random.seed(42)
-    scores = np.random.rand(len(width_values), len(lambda_values))
+    # Schematic — illustrative grid only (no empirical claims)
+    scores = np.full((len(width_values), len(lambda_values)), np.nan)
     
     im = ax1.imshow(scores, cmap='viridis', aspect='auto')
     ax1.set_xticks(range(len(lambda_values)))
@@ -120,9 +119,7 @@ def create_ude_training_figure():
     ax1.set_ylabel('Network Width')
     ax1.set_title('(a) Hyperparameter Search Space', fontsize=12, fontweight='bold')
     
-    # Mark optimal point
-    ax1.plot(0, 0, 'r*', markersize=15, markeredgecolor='white', markeredgewidth=2)
-    ax1.text(0.5, 0.5, 'Optimal\n(width=3, λ=1e-6)', ha='center', va='center', 
+    ax1.text(0.5, 0.5, 'Schematic — no empirical grid', ha='center', va='center', 
              fontsize=10, color='white', fontweight='bold')
     
     # Panel 2: Training loss curves
@@ -199,18 +196,9 @@ def create_bnode_diagnostics_figure():
     # Panel 1: MCMC trace plots
     ax1.set_title('(a) MCMC Trace Plots', fontsize=12, fontweight='bold')
     
-    # Simulate MCMC traces
-    np.random.seed(42)
-    n_samples = 1000
-    chain1 = np.cumsum(np.random.randn(n_samples) * 0.1)
-    chain2 = np.cumsum(np.random.randn(n_samples) * 0.1)
-    chain3 = np.cumsum(np.random.randn(n_samples) * 0.1)
-    chain4 = np.cumsum(np.random.randn(n_samples) * 0.1)
-    
-    ax1.plot(chain1, 'b-', alpha=0.7, linewidth=1, label='Chain 1')
-    ax1.plot(chain2, 'r-', alpha=0.7, linewidth=1, label='Chain 2')
-    ax1.plot(chain3, 'g-', alpha=0.7, linewidth=1, label='Chain 3')
-    ax1.plot(chain4, 'm-', alpha=0.7, linewidth=1, label='Chain 4')
+    # Schematic — traces not from artifacts
+    ax1.text(0.5, 0.5, 'Schematic — traces not from artifacts', transform=ax1.transAxes,
+             ha='center', va='center')
     ax1.set_xlabel('MCMC Iteration')
     ax1.set_ylabel('Parameter Value')
     ax1.legend()
@@ -220,12 +208,9 @@ def create_bnode_diagnostics_figure():
     ax2.set_title('(b) R-hat Convergence Diagnostics', fontsize=12, fontweight='bold')
     
     parameters = [f'θ{i}' for i in range(1, 11)]
-    rhat_values = np.random.uniform(1.0, 1.05, 10)
-    rhat_values[0] = 1.01  # Make first one good
-    rhat_values[1] = 1.02  # Make second one good
-    
-    colors = ['green' if r < 1.01 else 'orange' if r < 1.05 else 'red' for r in rhat_values]
-    bars = ax2.bar(parameters, rhat_values, color=colors, alpha=0.7)
+    rhat_values = [np.nan]*10
+    colors = ['gray']*10
+    bars = ax2.bar(parameters, [0 if np.isnan(x) else x for x in rhat_values], color=colors, alpha=0.3)
     ax2.axhline(y=1.01, color='green', linestyle='--', linewidth=2, label='Good (R̂ < 1.01)')
     ax2.axhline(y=1.05, color='red', linestyle='--', linewidth=2, label='Poor (R̂ > 1.05)')
     ax2.set_ylabel('R̂ Statistic')
@@ -236,19 +221,8 @@ def create_bnode_diagnostics_figure():
     # Panel 3: Calibration curves
     ax3.set_title('(c) Calibration Curves', fontsize=12, fontweight='bold')
     
-    nominal_coverage = np.linspace(0, 1, 100)
-    pre_calibration = 0.05 * np.ones_like(nominal_coverage)  # Poor calibration
-    post_calibration = nominal_coverage  # Perfect calibration
-    
-    ax3.plot(nominal_coverage, pre_calibration, 'r--', linewidth=2, label='Pre-calibration')
-    ax3.plot(nominal_coverage, post_calibration, 'k-', linewidth=2, label='Post-calibration')
-    ax3.plot([0, 1], [0, 1], 'k:', alpha=0.5, label='Perfect Calibration')
-    
-    # Mark specific points
-    ax3.plot(0.5, 0.005, 'ro', markersize=8, label='50%: 0.005')
-    ax3.plot(0.9, 0.005, 'ro', markersize=8, label='90%: 0.005')
-    ax3.plot(0.5, 0.541, 'go', markersize=8, label='50%: 0.541')
-    ax3.plot(0.9, 0.849, 'go', markersize=8, label='90%: 0.849')
+    ax3.text(0.5, 0.5, 'Schematic — see Results for empirical reliability', transform=ax3.transAxes,
+             ha='center', va='center')
     
     ax3.set_xlabel('Nominal Coverage')
     ax3.set_ylabel('Empirical Coverage')

@@ -37,11 +37,10 @@ def create_training_data_figure():
     # Panel 1: Training scenarios overview
     ax1.set_title('(a) Training Scenarios Distribution', fontsize=12, fontweight='bold')
     
-    # Simulate scenario parameters
-    np.random.seed(42)
-    n_scenarios = 50
-    alpha_values = np.random.uniform(0.1, 0.5, n_scenarios)
-    beta_values = np.random.uniform(0.8, 1.2, n_scenarios)
+    # Schematic — replace simulated parameters with placeholder (no empirical claims)
+    n_scenarios = 0
+    alpha_values = []
+    beta_values = []
     
     scatter = ax1.scatter(alpha_values, beta_values, c=range(n_scenarios), 
                          cmap='viridis', s=50, alpha=0.7)
@@ -54,17 +53,9 @@ def create_training_data_figure():
     # Panel 2: Time series examples
     ax2.set_title('(b) Sample Trajectories', fontsize=12, fontweight='bold')
     
-    t = np.linspace(0, 10, 200)
-    np.random.seed(42)
-    
-    # Generate sample trajectories
-    for i in range(3):
-        freq = 0.5 * np.exp(-0.3 * t) * np.cos(2 * np.pi * t + i) + 0.1 * np.random.randn(200)
-        storage = 0.5 + 0.3 * np.sin(0.5 * np.pi * t + i) + 0.05 * np.random.randn(200)
-        
-        ax2.plot(t, freq, 'k-', alpha=0.7, linewidth=1, label=f'Scenario {i+1}' if i == 0 else "")
-        ax2_twin = ax2.twinx()
-        ax2_twin.plot(t, storage, 'r--', alpha=0.7, linewidth=1, label=f'Storage {i+1}' if i == 0 else "")
+    ax2.text(0.5, 0.5, 'Schematic — replace with real trajectories', transform=ax2.transAxes,
+             ha='center', va='center')
+    ax2_twin = ax2.twinx()
     
     ax2.set_xlabel('Time (s)')
     ax2.set_ylabel('Frequency Deviation (p.u.)', color='black')
@@ -78,8 +69,8 @@ def create_training_data_figure():
     
     # Create a bar chart showing data distribution
     splits = ['Training', 'Validation', 'Test']
-    scenarios = [50, 10, 10]
-    points = [10050, 2010, 2010]
+    scenarios = [np.nan, np.nan, np.nan]
+    points = [np.nan, np.nan, np.nan]
     
     x = np.arange(len(splits))
     width = 0.35
