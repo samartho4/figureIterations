@@ -1,0 +1,7 @@
+bson
+numpy
+matplotlib
+pandas
+seaborn
+scipy
+pytest

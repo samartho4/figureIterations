@@ -16,7 +16,7 @@ from matplotlib.patches import Rectangle, FancyBboxPatch
 import matplotlib.patches as mpatches
 from scipy import stats
 import json
-from scripts.fig_utils import (
+from fig_utils import (
     set_matplotlib_defaults,
     provenance_footer,
     load_json_or_none,

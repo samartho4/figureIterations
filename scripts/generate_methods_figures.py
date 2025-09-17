@@ -208,9 +208,9 @@ def create_bnode_diagnostics_figure():
     ax2.set_title('(b) R-hat Convergence Diagnostics', fontsize=12, fontweight='bold')
     
     parameters = [f'θ{i}' for i in range(1, 11)]
-    rhat_values = [np.nan]*10
+    rhat_values = [float('nan')]*10
     colors = ['gray']*10
-    bars = ax2.bar(parameters, [0 if np.isnan(x) else x for x in rhat_values], color=colors, alpha=0.3)
+    bars = ax2.bar(parameters, [0.0]*10, color=colors, alpha=0.3)
     ax2.axhline(y=1.01, color='green', linestyle='--', linewidth=2, label='Good (R̂ < 1.01)')
     ax2.axhline(y=1.05, color='red', linestyle='--', linewidth=2, label='Poor (R̂ > 1.05)')
     ax2.set_ylabel('R̂ Statistic')
@@ -234,12 +234,9 @@ def create_bnode_diagnostics_figure():
     ax4.set_title('(d) Effective Sample Size', fontsize=12, fontweight='bold')
     
     parameters = [f'θ{i}' for i in range(1, 11)]
-    ess_values = np.random.uniform(200, 800, 10)
-    ess_values[0] = 750  # Make first one good
-    ess_values[1] = 600  # Make second one good
-    
-    colors = ['green' if ess > 400 else 'orange' if ess > 200 else 'red' for ess in ess_values]
-    bars = ax4.bar(parameters, ess_values, color=colors, alpha=0.7)
+    ess_values = [0.0]*10
+    colors = ['gray']*10
+    bars = ax4.bar(parameters, ess_values, color=colors, alpha=0.3)
     ax4.axhline(y=400, color='green', linestyle='--', linewidth=2, label='Good (ESS > 400)')
     ax4.axhline(y=200, color='red', linestyle='--', linewidth=2, label='Poor (ESS < 200)')
     ax4.set_ylabel('Effective Sample Size')
