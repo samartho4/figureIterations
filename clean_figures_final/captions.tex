@@ -1,0 +1,20 @@
+\newcommand\fig1Caption{UDE vs Physics on RMSE($x_2$) across 10 test scenarios. Mean$\Delta$ = -0.004488 (95\% CI [-0.039326, 0.030760]); Wilcoxon p = 0.9219; Cohen's $d_z$ = -0.0747. Points below the diagonal favor UDE.}
+\newcommand\fig2Caption{Histogram of per-scenario differences $\Delta$RMSE($x_2$) = UDE $-$ Physics. Mean$\Delta$ = -0.004488 with 95\% CI [-0.039326, 0.030760].}
+\newcommand\fig3Caption{Bland–Altman analysis for RMSE($x_2$). Bias = -0.004488; limits of agreement $\approx$ [-0.039326, 0.030760].}
+\newcommand\fig4Caption{Paired RMSE($x_2$) by scenario (Physics vs UDE). Wilcoxon p = 0.9219; Cohen's $d_z$ = -0.0747. Downward-sloping lines (to the right) favor UDE.}
+\newcommand\fig5Caption{Per-scenario $\Delta R^2(x_2)$ = UDE $-$ Physics. Mean $\Delta R^2$ = -0.0322. Negative bars indicate lower explanatory power for UDE.}
+\newcommand\fig6Caption{BNODE calibration (post-hoc variance scaling). Empirical coverage after calibration: 50\% = 0.541, 90\% = 0.849; near-diagonal reliability.}
+\newcommand\fig7Caption{Summary of RMSE($x_2$) and $R^2(x_2)$ across models; bars show mean with variability across scenarios.}
+\newcommand\fig8Caption{Computational efficiency comparison. Mean inference times per trajectory with variability; UDE $\approx$ 0.27 ms, Physics $\approx$ 0.08 ms.}
+\newcommand\fig9Caption{Symbolic residual $f_\theta(P)$ with cubic fit ($R^2 = 0.982$): $-0.055 + 0.836P + 0.001P^2 - 0.019P^3$. Mild saturation at high $P$.}
+
+% Intro/Methods/Additional (conceptual/method) figures
+\newcommand\figACaption{Microgrid architecture (left) and representative dynamics (right): storage state ($x_1$) and frequency/power deviation ($x_2$).}
+\newcommand\figBCaption{PINN limitations: gradient pathologies, spectral bias, stiff-equation failure, and competing loss terms.}
+\newcommand\figCCaption{Conceptual comparison: UDE = physics + small learned residual; BNODE = probabilistic neural ODE with calibrated uncertainty.}
+\newcommand\figDCaption{Two-state microgrid model and UDE modification replacing $\beta P_{gen}$ with learned residual $f_\theta(P_{gen})$.}
+\newcommand\figECaption{UDE training overview: hyperparameter search, training curves, solver tolerance/runtime trade-offs, and architecture performance.}
+\newcommand\figFCaption{BNODE diagnostics: MCMC trace/R̂/ESS and calibration curves (reliability against diagonal).}
+\newcommand\figGCaption{Training data overview: parameter distribution across scenarios, sample trajectories, data split sizes, and parameter ranges.}
+\newcommand\figHCaption{Validation dynamics: learning curves, RMSE/$R^2$ evolution, and convergence indicators.}
+\newcommand\figICaption{Ablations: network width, regularization, solver tolerance, and loss weighting trade-offs; optimal settings highlighted.}
