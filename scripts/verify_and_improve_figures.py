@@ -67,7 +67,7 @@ def verify_statistics(df):
     delta = ude_data - physics_data
     mean_delta = np.mean(delta)
     
-    # Bootstrap confidence interval (deterministic RNG, no np.random namespace)
+    # Bootstrap confidence interval (deterministic RNG)
     from numpy.random import default_rng
     rng = default_rng(42)
     n_bootstrap = 10000
