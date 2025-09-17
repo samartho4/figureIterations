@@ -67,12 +67,13 @@ def verify_statistics(df):
     delta = ude_data - physics_data
     mean_delta = np.mean(delta)
     
-    # Bootstrap confidence interval
-    np.random.seed(42)
+    # Bootstrap confidence interval (deterministic RNG, no np.random namespace)
+    from numpy.random import default_rng
+    rng = default_rng(42)
     n_bootstrap = 10000
     bootstrap_deltas = []
     for _ in range(n_bootstrap):
-        indices = np.random.choice(len(delta), len(delta), replace=True)
+        indices = rng.integers(0, len(delta), size=len(delta), endpoint=False)
         bootstrap_deltas.append(np.mean(delta[indices]))
     
     ci_lower = np.percentile(bootstrap_deltas, 2.5)

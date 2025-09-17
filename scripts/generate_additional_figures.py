@@ -91,6 +91,7 @@ def create_training_data_figure():
     # Panel 4: Parameter ranges
     ax4.set_title('(d) Parameter Ranges', fontsize=12, fontweight='bold')
     
+    # Schematic — parameter ranges (no randomness)
     parameters = ['α (damping)', 'β (coupling)', 'η_in (charge)', 'η_out (discharge)']
     min_vals = [0.1, 0.8, 0.85, 0.85]
     max_vals = [0.5, 1.2, 0.95, 0.95]

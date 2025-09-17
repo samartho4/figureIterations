@@ -89,16 +89,11 @@ def create_microgrid_architecture_figure():
     # Right panel: Dynamics
     ax2.set_title('(b) System Dynamics', fontsize=14, fontweight='bold', pad=20)
     
-    # Time series simulation
+    # Schematic — conceptual trajectories (no randomness)
     t = np.linspace(0, 10, 200)
-    np.random.seed(42)
-    
-    # Frequency dynamics
-    freq = 0.5 * np.exp(-0.3 * t) * np.cos(2 * np.pi * t) + 0.1 * np.random.randn(200)
+    freq = 0.5 * np.exp(-0.3 * t) * np.cos(2 * np.pi * t)
     ax2.plot(t, freq, 'k-', linewidth=1.5, label='Frequency (x₂)')
-    
-    # Storage dynamics
-    storage_state = 0.5 + 0.3 * np.sin(0.5 * np.pi * t) + 0.05 * np.random.randn(200)
+    storage_state = 0.5 + 0.3 * np.sin(0.5 * np.pi * t)
     ax2_twin = ax2.twinx()
     ax2_twin.plot(t, storage_state, 'k--', linewidth=1.5, label='Storage (x₁)')
     
