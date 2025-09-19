@@ -27,7 +27,31 @@
     "fig4_paired_lines_rmse_x2_by_model_improved.pdf": {
       "sha256": "d5ae9a6cca0fc86857e6098e3c205956b790ca5180c27da6bef26dd981adc19d",
       "bytes": 32372
+    },
+    "figA_per_scenario_delta_bootstrap.pdf": {
+      "sha256": "2f4d1595d093c221aaa6ababbdacd64ae08b36a18779f219a03351748100b8f9",
+      "bytes": 20333
+    },
+    "figB_ecdf_rmse_x2.pdf": {
+      "sha256": "7399b386f93ff41b9830adcfa066bb2e12aaf6b8b40fdbf801de915a36e35153",
+      "bytes": 14885
+    },
+    "figC_joint_rmse_r2_x2.pdf": {
+      "sha256": "03087c4d76d13251d275c2649d255e26e5a0676b3c746d7aa5788f1388d9ab76",
+      "bytes": 15164
+    },
+    "figD_reliability_simple.pdf": {
+      "sha256": "a7edee551425c354589cfc7b9edea6aff4a6e5dad0d0a3153c343294b88c455e",
+      "bytes": 15204
+    },
+    "figE_nll_pre_post.pdf": {
+      "sha256": "38ca169b8cc27b1af63420cf911be30e7f5709dce62211f48bfd9bfbd34d9e3b",
+      "bytes": 12612
+    },
+    "figF_coverage_dumbbell.pdf": {
+      "sha256": "c0d32616cdc43fb9f177630ace3e5a0f8c457e2e2ca28fc7d90dd9d9997fcbad",
+      "bytes": 12442
     }
   },
-  "script_commits": "5153adb176602070ea503dbe55ace941247cbd68"
+  "script_commits": "d88cd3b2de695f0a09e6497acdbcb241c89504c0"
 }
