@@ -79,6 +79,11 @@ def regenerate_figures():
     subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'create_additional_verified_figures.py')])
     # Symbolic regression figure
     subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'symbolic_regression_verified.py')])
+    # True residual (runs only if CSV present and sklearn available)
+    try:
+        subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'true_symbolic_residual_fig.py')])
+    except Exception as e:
+        print('(skip) true_symbolic_residual_fig:', e)
 
 
 def check_artifacts(stats):
