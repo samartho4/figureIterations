@@ -199,17 +199,25 @@ def create_publication_bland_altman(stats_data):
     ax.scatter(means, differences, s=100, alpha=0.8, color='#2E86AB', 
               edgecolors='white', linewidth=1.5, zorder=3)
     
-    # Add mean difference line
+    # Add mean difference line (bias)
     ax.axhline(mean_delta, color='#E63946', linestyle='-', linewidth=3, 
               label=f'Bias = {mean_delta:.4f}', zorder=4)
     
-    # Add limits of agreement
-    ax.axhline(ci_lower, color='#F77F00', linestyle='--', linewidth=2, 
-              alpha=0.8, label='Limits of Agreement', zorder=2)
-    ax.axhline(ci_upper, color='#F77F00', linestyle='--', linewidth=2, alpha=0.8, zorder=2)
+    # Compute and draw true Bland-Altman Limits of Agreement (LoA)
+    # LoA = mean ± 1.96 * std(differences)
+    std_delta = np.std(differences, ddof=1)
+    loa_lower = mean_delta - 1.96 * std_delta
+    loa_upper = mean_delta + 1.96 * std_delta
+    ax.axhline(loa_lower, color='#F77F00', linestyle='--', linewidth=2, 
+              alpha=0.9, label='Limits of Agreement (±1.96·SD)', zorder=2)
+    ax.axhline(loa_upper, color='#F77F00', linestyle='--', linewidth=2, alpha=0.9, zorder=2)
     
-    # Add statistics
-    stats_text = f'Wilcoxon p = {wilcoxon_p:.4f}\nCohen\'s dz = {cohens_d:.4f}'
+    # Add statistics (include LoA numerics)
+    stats_text = (
+        f'Wilcoxon p = {wilcoxon_p:.4f}\n'
+        f"Cohen's dz = {cohens_d:.4f}\n"
+        f'LoA: [{loa_lower:.4f}, {loa_upper:.4f}]'
+    )
     ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10,
             verticalalignment='top', bbox=dict(boxstyle='round,pad=0.5', 
             facecolor='white', alpha=0.95, edgecolor='gray', linewidth=0.8))
@@ -253,8 +261,6 @@ def main():
     print("✓ Created publication-ready histogram")
     
     fig3 = create_publication_bland_altman(stats_data)
-    fig3.savefig('clean_figures_final/fig3_bland_altman_rmse_x2_publication.pdf', 
-                 dpi=300, bbox_inches='tight', pad_inches=0.2)
     fig3.savefig('clean_figures_final/fig3_bland_altman_rmse_x2_publication.pdf', 
                  dpi=300, bbox_inches='tight', pad_inches=0.2)
     plt.close(fig3)
