@@ -29,29 +29,33 @@
       "bytes": 32372
     },
     "figA_per_scenario_delta_bootstrap.pdf": {
-      "sha256": "2f4d1595d093c221aaa6ababbdacd64ae08b36a18779f219a03351748100b8f9",
+      "sha256": "c02ba6714097e05a546c78ad613ff0d4d27bb8c43f6afc17c8b5b72361095439",
       "bytes": 20333
     },
     "figB_ecdf_rmse_x2.pdf": {
-      "sha256": "7399b386f93ff41b9830adcfa066bb2e12aaf6b8b40fdbf801de915a36e35153",
+      "sha256": "95623b54a987d65dfe829e1aece0800de60857354217e36069ccba9d6d38629d",
       "bytes": 14885
     },
     "figC_joint_rmse_r2_x2.pdf": {
-      "sha256": "03087c4d76d13251d275c2649d255e26e5a0676b3c746d7aa5788f1388d9ab76",
+      "sha256": "c76df0be2f5eba2ac2fc363c0c61a8bf0fa88b4b58e862d1b9d8d3e88d53100d",
       "bytes": 15164
     },
     "figD_reliability_simple.pdf": {
-      "sha256": "a7edee551425c354589cfc7b9edea6aff4a6e5dad0d0a3153c343294b88c455e",
+      "sha256": "ff81c7d48f03c7a1f059048c8ff6c61efff16a5b4b70f188567b04d867cab61e",
       "bytes": 15204
     },
     "figE_nll_pre_post.pdf": {
-      "sha256": "38ca169b8cc27b1af63420cf911be30e7f5709dce62211f48bfd9bfbd34d9e3b",
+      "sha256": "54b5495a0b30f3615c9929af4b66324243d5ad88cce5710f7e541e2d049ed8f4",
       "bytes": 12612
     },
     "figF_coverage_dumbbell.pdf": {
-      "sha256": "c0d32616cdc43fb9f177630ace3e5a0f8c457e2e2ca28fc7d90dd9d9997fcbad",
+      "sha256": "7e3f495a7011b53fd713d74b2101170d435bbfddc206318cbc0bde70348697da",
       "bytes": 12442
+    },
+    "figSR_ude_vs_physics_polyfit.pdf": {
+      "sha256": "e6a103709c60c5bd609996167aa5f6883d68aa6f0efcf8eeafdd50790940a171",
+      "bytes": 16229
     }
   },
-  "script_commits": "d88cd3b2de695f0a09e6497acdbcb241c89504c0"
+  "script_commits": "400b6685548a50cb7b4c9b7bb948b1621f16ccb6"
 }

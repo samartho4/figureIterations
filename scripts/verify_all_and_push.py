@@ -28,6 +28,7 @@ TARGETS = [
     ('figD_reliability_simple.pdf', None),
     ('figE_nll_pre_post.pdf', None),
     ('figF_coverage_dumbbell.pdf', None),
+    ('figSR_ude_vs_physics_polyfit.pdf', None),
 ]
 
 PROVENANCE = {}
@@ -76,6 +77,8 @@ def regenerate_figures():
     subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'create_remaining_figures.py')])
     # Generate additional verified figures (A–F)
     subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'create_additional_verified_figures.py')])
+    # Symbolic regression figure
+    subprocess.check_call([sys.executable, str(ROOT / 'scripts' / 'symbolic_regression_verified.py')])
 
 
 def check_artifacts(stats):
