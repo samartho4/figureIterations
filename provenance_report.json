@@ -1,0 +1,33 @@
+{
+  "csv_path": "/Users/sam/Documents/actualResults/figureIterations/results/comprehensive_metrics.csv",
+  "csv_sha256": "11cb41ece8bcaf003513a1f1be0dfd2c58b070e2a11b53c0f2bcaa62a1957f39",
+  "stats": {
+    "n_pairs": 10,
+    "mean_delta": -0.007098482637326572,
+    "ci_lower": -0.013855113592782459,
+    "ci_upper": -0.0004783525959696524,
+    "wilcoxon_p": 0.083984375,
+    "cohens_d": -0.6507243666363141,
+    "loa_lower": -0.02963585455873541,
+    "loa_upper": 0.015438889284082262
+  },
+  "figures": {
+    "fig1_scatter_rmse_x2_ude_vs_physics_improved.pdf": {
+      "sha256": "ffe415c7e6f20bb9868769b67ce2ef3e67457b68233bd1c41fe1960caa299986",
+      "bytes": 30015
+    },
+    "fig2_hist_delta_rmse_x2_ude_minus_physics_improved.pdf": {
+      "sha256": "8a113488b1e927bdacc70b842b8f519086dc11bb2386d7422f61e9a492e205ba",
+      "bytes": 29702
+    },
+    "fig3_bland_altman_rmse_x2_improved.pdf": {
+      "sha256": "23097330babc552eacbd79a133d589e2f06773e6034144b44224a2ad2168a784",
+      "bytes": 37630
+    },
+    "fig4_paired_lines_rmse_x2_by_model_improved.pdf": {
+      "sha256": "d5ae9a6cca0fc86857e6098e3c205956b790ca5180c27da6bef26dd981adc19d",
+      "bytes": 32372
+    }
+  },
+  "script_commits": "5153adb176602070ea503dbe55ace941247cbd68"
+}
